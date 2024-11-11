@@ -119,10 +119,7 @@ function collision() {
       let dx = particles[i].pos.x - fishes[j].x;
       let dy = particles[i].pos.y - fishes[j].y;
       let d = Math.hypot(dx, dy);
-      if (
-        d < particles[i].radius / 2 + fishes[j].radius / 2 &&
-        particles.length > 0
-      ) {
+      if (d < particles[i].radius / 2 + fishes[j].radius / 2) {
         if (!gameEnd) {
           score += 10;
         } else {
