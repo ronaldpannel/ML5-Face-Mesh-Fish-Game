@@ -14,6 +14,10 @@ let score = 0;
 let scoreText = "";
 let overlay;
 let gameEnd;
+let startBtn;
+let hScore;
+let hScoreResetBtn;
+let seaSound;
 
 //ml5.js
 
@@ -29,13 +33,25 @@ function preload() {
   enemyImg = loadImage("enemy1.png");
   bubSound1 = loadSound("bubblePop1.wav");
   bubSound2 = loadSound("bubblePop2.wav");
+  seaSound = loadSound("SeaSound.mp3");
 }
 
 function setup() {
   canvas = createCanvas(640, 480);
   canvas.parent(container);
   overlay = createGraphics(640, 480);
-  // overlay.background(0);
+  overlay.startBtn = createButton("Restart");
+  overlay.startBtn.parent("container");
+  overlay.startBtn.position(width / 2 - 50, height / 2 + 50);
+  overlay.startBtn.class("sBtn");
+  overlay.hScoreResetBtn = createButton("Clear High Score");
+  overlay.hScoreResetBtn.parent("container");
+  overlay.hScoreResetBtn.position(width / 2 - 100, height / 2 + 100);
+  overlay.hScoreResetBtn.class("sBtn");
+
+  // seaSound.volume(0);
+  // seaSound.play();
+
   gameEnd = false;
   //Create the webcam video and hide it
   video = createCapture(VIDEO, { flipped: true });
@@ -53,14 +69,17 @@ function setup() {
     let x = width + 50;
     let y = random(50, height / 2);
     enemies.push(new Enemy(x, y));
-  }, floor(random(3000, 5000)));
+  }, floor(random(3000, 7000)));
 }
 
 function draw() {
   background(0);
   image(video, 0, 0);
+  hScore = getItem("scoreH") || 0;
 
   image(overlay, 0, 0);
+  overlay.startBtn.mouseClicked(refresh);
+  overlay.hScoreResetBtn.mouseClicked(resetHS);
 
   if (faces.length > 0 && faces[0].lips) {
     let topLeftLip = createVector(faces[0].lips.x, faces[0].lips.y);
@@ -109,6 +128,7 @@ function draw() {
   collision();
   collisionEnemy();
   drawText(scoreText);
+  drawHighScore();
 
   // drawPartsKeypoints();
 }
@@ -128,6 +148,9 @@ function collision() {
 
         bubSound1.play();
         fishes.splice(j, 1);
+        // if (particles.length > 2) {
+        //   particles.splice(i, 1);
+        // }
       }
     }
   }
@@ -143,7 +166,6 @@ function collisionEnemy() {
         d < particles[i].radius / 2 + enemies[j].radius / 2 &&
         particles.length > 0
       ) {
-        console.log("hit");
         bubSound1.play();
         enemies.splice(j, 1);
         gameEnd = true;
@@ -182,6 +204,26 @@ function gameOver() {
   overlay.textAlign(CENTER, CENTER);
   overlay.fill(255);
   overlay.text(`Game Over Your Score Was: ${score}`, width / 2, height / 2);
+  overlay.startBtn.addClass("active");
+  overlay.hScoreResetBtn.addClass("active");
+}
+
+function refresh() {
+  console.log("refresh");
+  location.reload();
+}
+function resetHS() {
+  clearStorage();
+  location.reload();
+}
+function drawHighScore() {
+  if (score > getItem("scoreH")) {
+    hScore = storeItem("scoreH", Number(score));
+  }
+  textSize(25);
+  textAlign(CENTER, CENTER);
+  scoreText = text(`Highest Score: ${hScore}`, 500, 20);
+  fill(255);
 }
 
 function windowResized() {
