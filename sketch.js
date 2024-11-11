@@ -18,6 +18,8 @@ let startBtn;
 let hScore;
 let hScoreResetBtn;
 let seaSound;
+let volumeSlider;
+let volLabel;
 
 //ml5.js
 
@@ -49,8 +51,10 @@ function setup() {
   overlay.hScoreResetBtn.position(width / 2 - 100, height / 2 + 100);
   overlay.hScoreResetBtn.class("sBtn");
 
-  // seaSound.volume(0);
-  // seaSound.play();
+  volumeSlider = createSlider(0, 1, 0.01, 0.01);
+  volumeSlider.parent("container");
+  volumeSlider.position(230, 10);
+  seaSound.play();
 
   gameEnd = false;
   //Create the webcam video and hide it
@@ -76,6 +80,7 @@ function draw() {
   background(0);
   image(video, 0, 0);
   hScore = getItem("scoreH") || 0;
+  seaSound.setVolume(volumeSlider.value());
 
   image(overlay, 0, 0);
   overlay.startBtn.mouseClicked(refresh);
@@ -196,6 +201,8 @@ function drawText(scoreText) {
   textSize(25);
   textAlign(CENTER, CENTER);
   scoreText = text(`Score: ${score}`, 60, 20);
+  volLabel = text("Vol", 200, 20);
+
   fill(255);
 }
 
@@ -222,7 +229,7 @@ function drawHighScore() {
   }
   textSize(25);
   textAlign(CENTER, CENTER);
-  scoreText = text(`Highest Score: ${hScore}`, 500, 20);
+  scoreText = text(`Highest Score: ${hScore}`, 520, 20);
   fill(255);
 }
 
