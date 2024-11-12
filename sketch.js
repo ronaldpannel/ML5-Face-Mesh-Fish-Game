@@ -13,6 +13,7 @@ let canvas;
 let score = 0;
 let scoreText = "";
 let overlay;
+let seaScape;
 let gameEnd;
 let startBtn;
 let hScore;
@@ -20,6 +21,11 @@ let hScoreResetBtn;
 let seaSound;
 let volumeSlider;
 let volLabel;
+let ExPlodeNum = 10;
+let exPlodeArray = [];
+let bgImage;
+let bgColor;
+let waves;
 
 //ml5.js
 
@@ -36,11 +42,13 @@ function preload() {
   bubSound1 = loadSound("bubblePop1.wav");
   bubSound2 = loadSound("bubblePop2.wav");
   seaSound = loadSound("SeaSound.mp3");
+  bgImage = loadImage("background1.png");
 }
 
 function setup() {
   canvas = createCanvas(640, 480);
   canvas.parent(container);
+  seaScape = createGraphics(640, 480);
   overlay = createGraphics(640, 480);
   overlay.startBtn = createButton("Restart");
   overlay.startBtn.parent("container");
@@ -65,15 +73,17 @@ function setup() {
   faceMesh.detectStart(video, gotFaces);
   setInterval(() => {
     let x = width + 50;
-    let y = random(50, height / 2);
+    let y = random(90, height / 2);
     fishes.push(new Fish(x, y));
   }, floor(random(1000, 2000)));
 
   setInterval(() => {
     let x = width + 50;
-    let y = random(50, height / 2);
+    let y = random(90, height / 2);
     enemies.push(new Enemy(x, y));
   }, floor(random(3000, 7000)));
+
+  waves = new Waves();
 }
 
 function draw() {
@@ -81,6 +91,11 @@ function draw() {
   image(video, 0, 0);
   hScore = getItem("scoreH") || 0;
   seaSound.setVolume(volumeSlider.value());
+
+  image(seaScape, 0, 0);
+  bgColor = "rgba(0, 0, 255, 0.005)";
+  seaScape.background(bgColor);
+  // seaScape.image(bgImage, 0,0)
 
   image(overlay, 0, 0);
   overlay.startBtn.mouseClicked(refresh);
@@ -130,12 +145,27 @@ function draw() {
     enemies[i].draw();
     enemies[i].update();
   }
+
+  for (let i = exPlodeArray.length - 1; i > 0; i--) {
+    exPlodeArray[i].draw();
+    exPlodeArray[i].update();
+  }
+
+  waves.update();
+  waves.draw();
+
   collision();
   collisionEnemy();
   drawText(scoreText);
   drawHighScore();
 
   // drawPartsKeypoints();
+}
+function createExParticles(x, y) {
+  for (let i = 0; i < ExPlodeNum; i++) {
+    let radius = random(20, 30);
+    exPlodeArray.push(new ExParticle(x, y, radius));
+  }
 }
 
 function collision() {
@@ -150,12 +180,9 @@ function collision() {
         } else {
           score += 0;
         }
-
+        createExParticles(fishes[j].x, fishes[j].y);
         bubSound1.play();
         fishes.splice(j, 1);
-        // if (particles.length > 2) {
-        //   particles.splice(i, 1);
-        // }
       }
     }
   }
@@ -198,12 +225,11 @@ function gotFaces(results) {
 }
 
 function drawText(scoreText) {
+  fill(0);
   textSize(25);
   textAlign(CENTER, CENTER);
   scoreText = text(`Score: ${score}`, 60, 20);
   volLabel = text("Vol", 200, 20);
-
-  fill(255);
 }
 
 function gameOver() {
@@ -216,11 +242,11 @@ function gameOver() {
 }
 
 function refresh() {
-  console.log("refresh");
   location.reload();
 }
 function resetHS() {
-  clearStorage();
+  hScore = storeItem("scoreH", Number(0));
+  // clearStorage();
   location.reload();
 }
 function drawHighScore() {
