@@ -59,7 +59,7 @@ function setup() {
   overlay.hScoreResetBtn.position(width / 2 - 100, height / 2 + 100);
   overlay.hScoreResetBtn.class("sBtn");
 
-  volumeSlider = createSlider(0, 1, 0.01, 0.01);
+  volumeSlider = createSlider(0, 1, 0.1, 0.01);
   volumeSlider.parent("container");
   volumeSlider.position(230, 10);
   seaSound.play();
@@ -81,7 +81,7 @@ function setup() {
     let x = width + 50;
     let y = random(90, height / 2);
     enemies.push(new Enemy(x, y));
-  }, floor(random(3000, 7000)));
+  }, floor(random(5000, 8000)));
 
   waves = new Waves();
 }
@@ -180,9 +180,15 @@ function collision() {
         } else {
           score += 0;
         }
+
         createExParticles(fishes[j].x, fishes[j].y);
         bubSound1.play();
         fishes.splice(j, 1);
+        setTimeout(() => {
+          particles.splice(i, 1);
+        }, 100);
+
+        console.log(particles.length);
       }
     }
   }
