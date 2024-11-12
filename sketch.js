@@ -49,7 +49,7 @@ function setup() {
   seaScape = createGraphics(640, 480);
   canvas = createCanvas(640, 480);
   canvas.parent(container);
-  
+
   overlay = createGraphics(640, 480);
   overlay.startBtn = createButton("Restart");
   overlay.startBtn.parent("container");
@@ -244,6 +244,12 @@ function gameOver() {
   overlay.textAlign(CENTER, CENTER);
   overlay.fill(255);
   overlay.text(`Game Over Your Score Was: ${score}`, width / 2, height / 2);
+  overlay.textSize(20);
+  overlay.text(
+    `Open and Close Mouth to Fire Bubbles`,
+    width / 2,
+    height / 2 + 30
+  );
   overlay.startBtn.addClass("active");
   overlay.hScoreResetBtn.addClass("active");
 }
