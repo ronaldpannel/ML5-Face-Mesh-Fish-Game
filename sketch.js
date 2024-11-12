@@ -46,9 +46,10 @@ function preload() {
 }
 
 function setup() {
+  seaScape = createGraphics(640, 480);
   canvas = createCanvas(640, 480);
   canvas.parent(container);
-  seaScape = createGraphics(640, 480);
+  
   overlay = createGraphics(640, 480);
   overlay.startBtn = createButton("Restart");
   overlay.startBtn.parent("container");
